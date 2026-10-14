@@ -6,6 +6,7 @@ import {
   Inject,
   ServiceUnavailableException,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { Public } from "../common/decorators/roles.decorator.js";
 import type { HealthReport } from "./health.service.js";
 import { HealthService } from "./health.service.js";
@@ -18,6 +19,7 @@ import { HealthService } from "./health.service.js";
  * - `GET /health`         -> full readiness report (503 when any check is down)
  * - `GET /health/live`    -> liveness probe (always 200 while the process runs)
  */
+@ApiTags("health")
 @Controller("health")
 export class HealthController {
   constructor(

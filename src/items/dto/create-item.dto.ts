@@ -1,3 +1,5 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 /**
  * Data Transfer Object describing the payload required to create an item.
  *
@@ -7,9 +9,11 @@
  */
 export class CreateItemDto {
   /** Human readable name of the item. Required, non-empty. */
+  @ApiProperty({ example: "Wireless Mouse", description: "Human readable name of the item" })
   name!: string;
 
   /** Optional free-form description. */
+  @ApiProperty({ required: false, example: "Ergonomic 2.4GHz wireless mouse", description: "Optional free-form description" })
   description?: string;
 }
 

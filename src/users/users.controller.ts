@@ -9,6 +9,7 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Roles } from "../common/decorators/roles.decorator.js";
 import type { PaginatedResult } from "../common/dto/pagination.dto.js";
 import { parsePaginationQuery } from "../common/dto/pagination.dto.js";
@@ -26,6 +27,8 @@ import { UsersService } from "./users.service.js";
  * - `GET    /users/:id`  -> fetch a single user
  * - `DELETE /users/:id`  -> delete a user (requires the `admin` role)
  */
+@ApiTags("users")
+@ApiBearerAuth("bearer")
 @Controller("users")
 export class UsersController {
   constructor(

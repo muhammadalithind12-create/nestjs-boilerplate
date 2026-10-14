@@ -26,6 +26,25 @@ interface MinimalResponse {
 }
 
 /**
+ * Shape of the DTO validation errors thrown by the boilerplate's
+ * `validate*Dto` helpers (e.g. `CreateItemValidationError`). They carry the
+ * offending `field` and a human-readable message, so the API maps them to
+ * `400 Bad Request` instead of hiding them behind a 500.
+ */
+interface DtoValidationError extends Error {
+  field?: string;
+}
+
+function isDtoValidationError(value: unknown): value is DtoValidationError {
+  return (
+    value instanceof Error &&
+    typeof value.name === "string" &&
+    value.name.endsWith("ValidationError") &&
+    "field" in value
+  );
+}
+
+/**
  * Global exception filter that converts any thrown error into a uniform JSON
  * envelope, hiding internal details for non-HTTP exceptions while preserving
  * the rich messages of {@link HttpException}s (including validation arrays).
@@ -82,6 +101,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
         | string[];
       const error = (record.error as string) ?? exception.name;
       return { statusCode, message, error };
+    }
+
+    if (isDtoValidationError(exception)) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: exception.message,
+        error: "ValidationError",
+      };
     }
 
     return {

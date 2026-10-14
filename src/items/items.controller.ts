@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { validateCreateItemDto } from "./dto/create-item.dto.js";
 import type { Item } from "./item.entity.js";
 import { ItemsService } from "./items.service.js";
@@ -23,6 +24,8 @@ import { ItemsService } from "./items.service.js";
  * dependency injection works regardless of whether `emitDecoratorMetadata`
  * is honoured by the transpiler in use.
  */
+@ApiTags("items")
+@ApiBearerAuth("bearer")
 @Controller("items")
 export class ItemsController {
   constructor(

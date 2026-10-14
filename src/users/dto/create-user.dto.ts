@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import type { UserRole } from "../user.entity.js";
 
 /** Roles accepted by {@link validateCreateUserDto}. */
@@ -9,12 +10,15 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Payload required to create a {@link User}. */
 export class CreateUserDto {
   /** Display name. Required, non-empty. */
+  @ApiProperty({ example: "Ayesha Khan", description: "Display name" })
   name!: string;
 
   /** Email address. Required, validated and normalized to lowercase. */
+  @ApiProperty({ example: "ayesha@example.com", description: "Email address, normalized to lowercase" })
   email!: string;
 
   /** Optional roles. Defaults to `["user"]` when omitted. */
+  @ApiProperty({ required: false, enum: ["admin", "user"], default: ["user"], description: 'Roles granted to the user' })
   roles?: UserRole[];
 }
 
