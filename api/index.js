@@ -95,12 +95,37 @@ async function getExpressApp() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup("docs", app, document);
+
+  // Serve the OpenAPI JSON plus a CDN-powered Swagger UI. (The swagger-ui
+  // static assets bundled with @nestjs/swagger are not present in the
+  // serverless function bundle, so the UI loads its JS/CSS from a CDN.)
+  const httpAdapter = app.getHttpAdapter();
+  const expressInstance = httpAdapter.getInstance();
+  expressInstance.get("/docs-json", (req, res) => res.json(document));
+  const swaggerHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ForgeAPI Demo - Swagger UI</title>
+<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js" crossorigin></script>
+<script>
+window.onload = function () {
+  SwaggerUIBundle({ url: "/docs-json", dom_id: "#swagger-ui" });
+};
+</script>
+</body>
+</html>`;
+  expressInstance.get(["/docs", "/docs/"], (req, res) => res.type("html").send(swaggerHtml));
 
   await seedDemoData(app);
   await app.init();
 
-  expressApp = app.getHttpAdapter().getInstance();
+  expressApp = expressInstance;
   return expressApp;
 }
 
